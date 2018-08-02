@@ -1410,6 +1410,29 @@ def transpose(a, perm=None, name="transpose", conjugate=False):
     return ret
 
 
+@tf_export("swapxes")
+def swapaxes(a, axis1, axis2, name="swapaxes"):
+  with ops.name_scope(name, "swapaxes", [a]) as name:
+    rank = gen_array_ops.rank(a)
+    if axis1 > axis2:
+      axis1, axis2 = axis2, axis1
+    perm = concat([
+        gen_math_ops._range(0, axis1, 1)
+        [axis2],
+        gen_math_ops._range(axis1 + 1, axis2, 1),
+        [axis1],
+        gen_math_ops._range(axis2 + 1, rank, 1),
+    ], axis=0)
+    ret = gen_array_ops.transpose(a, perm=perm, name=name)
+    # NOTE: Setting the shape explicitly because
+    #   reverse is not handled by the shape function.
+    if context.in_graph_mode():
+      input_shape = ret.op.inputs[0].get_shape().dims
+      if input_shape is not None:
+        ret.set_shape(input_shape[::-1])
+    return ret
+
+
 # pylint: disable=invalid-name
 @tf_export("matrix_transpose", "linalg.transpose")
 def matrix_transpose(a, name="matrix_transpose", conjugate=False):
