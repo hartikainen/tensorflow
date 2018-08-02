@@ -1412,6 +1412,56 @@ def transpose(a, perm=None, name="transpose", conjugate=False):
 
 @tf_export("swapxes")
 def swapaxes(a, axis1, axis2, name="swapaxes"):
+  """Interchanges `axis1` and `axis2` in `a`.
+
+  For example:
+
+  ```python
+  x = tf.constant([[1, 2, 3]])
+  x.shape  # (1, 3)
+  y = tf.swapaxes(x, 0, 1)  # [[1]
+                            #  [2]
+                            #  [3]]
+  y.shape  # (3, 1)
+
+  x = tf.constant(tf.reshape(tf.range(2*3*4), (2,3,4)))
+  y1 = tf.swapaxes(x, 1, 2)  # [[[ 0,  4,  8],
+                                [ 1,  5,  9],
+                                [ 2,  6, 10],
+                                [ 3,  7, 11]],
+
+                               [[12, 16, 20],
+                                [13, 17, 21],
+                                [14, 18, 22],
+                                [15, 19, 23]]]
+  y1.shape  # (2, 4, 3)
+  y2 = tf.swapaxes(x, 0, 2)  # [[[ 0, 12],
+                                 [ 4, 16],
+                                 [ 8, 20]],
+
+                                [[ 1, 13],
+                                 [ 5, 17],
+                                 [ 9, 21]],
+
+                                [[ 2, 14],
+                                 [ 6, 18],
+                                 [10, 22]],
+
+                                [[ 3, 15],
+                                 [ 7, 19],
+                                 [11, 23]]]
+  y2.shape  # (4, 2, 3)
+  ```
+
+  Args:
+    a: A `Tensor`.
+    axis1: An `int`, the index of the first axis to be swapped.
+    axis2: An `int`, the index of the second axis to be swapped.
+    name: A name for the operation (optional).
+
+  Returns:
+    A `Tensor` with two axes swapped.
+  """
   with ops.name_scope(name, "swapaxes", [a]) as name:
     rank = gen_array_ops.rank(a)
     if axis1 > axis2:
