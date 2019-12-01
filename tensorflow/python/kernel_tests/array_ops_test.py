@@ -110,6 +110,33 @@ class BatchMatrixTransposeTest(test_util.TensorFlowTestCase):
         array_ops.matrix_transpose(vector)
 
 
+class SwapAxesTest(test_util.TensorFlowTestCase):
+
+  def testSwapsCorrectly(self):
+    matrix = [[1, 2, 3]]  # Shape (1, 3)
+    expected_transposed = [[1], [2], [3]]  # Shape (3, 1)
+    with self.test_session():
+      transposed = array_ops.swapaxes(matrix, 0, 1)
+      self.assertEqual((3, 1), transposed.get_shape())
+      self.assertAllEqual(expected_transposed, transposed.eval())
+
+  def testMultiDimensional(self):
+    matrix = array_ops.reshape(math_ops.range(2 * 3 * 4 * 5), (2, 3, 4, 5))
+    expected_transposed = array_ops.transpose(matrix, perm=(2, 1, 0, 3))
+    with self.test_session():
+      transposed = array_ops.swapaxes(matrix, 2, 0)
+      self.assertEqual((4, 3, 2, 5), transposed.get_shape())
+      self.assertAllEqual(expected_transposed, transposed.eval())
+
+  def testAxis1GreaterThanAxis2(self):
+    matrix = [[1, 2, 3]]  # Shape (1, 3)
+    expected_transposed = [[1], [2], [3]]  # Shape (3, 1)
+    with self.test_session():
+      transposed = array_ops.swapaxes(matrix, 1, 0)
+      self.assertEqual((3, 1), transposed.get_shape())
+      self.assertAllEqual(expected_transposed, transposed.eval())
+
+
 class BooleanMaskTest(test_util.TensorFlowTestCase):
 
   def setUp(self):
